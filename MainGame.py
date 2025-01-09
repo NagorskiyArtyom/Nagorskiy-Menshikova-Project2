@@ -8,10 +8,10 @@ screen = pygame.display.set_mode((800, 693))  # Создали screen - дисп
 size = width, height = screen.get_size()
 
 
-def triangle_position(x, y):  # Получение координат основного треугольника (в зависимости от размеров дисплея)
-    return [(50, y - 50),
-            (x * 0.5, y - (x - 100) * math.sqrt(3) // 2),
-            (x - 50, y - 50)]
+def triangle_position(pos_x, pos_y):  # Получение координат основного треугольника (в зависимости от размеров дисплея)
+    return [(50, pos_y - 50),
+            (pos_x * 0.5, pos_y - (pos_x - 100) * math.sqrt(3) // 2),
+            (pos_x - 50, pos_y - 50)]
 
 
 hole_radius = (triangle_position(width, height)[-1][0]
@@ -52,7 +52,7 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
 
 
 class Hole(pygame.sprite.Sprite):  # Объект - отверстие
-    image = load_image("yandex-logo.png")
+    image = load_image("minion.jpg")
     image1 = pygame.transform.scale(image, (2 * hole_radius, 2 * hole_radius))  # Изменили размер изображения
 
     def __init__(self, *group):  # Создаём спрайт
@@ -61,17 +61,54 @@ class Hole(pygame.sprite.Sprite):  # Объект - отверстие
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = holes_positions(triangle_position(width, height))[len(holes) - 1]
 
+    def update(self):  # Меняем координаты спрайта
+        self.rect.x, self.rect.y = pygame.mouse.get_pos()[0] - dx, pygame.mouse.get_pos()[1] - dy
 
+
+holes = pygame.sprite.Group()  # Создал группу спрайтов
+for _ in range(len(holes_positions(triangle_position(width, height)))):  # Добавляю в группу спрайты:
+    Hole(holes)
+
+
+def move(sprite_group, main_sprite_index):  # Функция, переделывающая группу спрайтов так, чтобы спрайт, которого мы
+    # коснулись, был поверх других, т.е. отрисовывался последним - был 15-й фишкой
+    new_sprite_group = pygame.sprite.Group()
+    for sprite_index in range(main_sprite_index):  # Порядок спрайтов до "активного" спрайта остаётся неизменным
+        new_sprite_group.add(sprite_group.sprites()[sprite_index])
+    for sprite_index in range(main_sprite_index, len(sprite_group) - 1):  # Начиная с "бывшего" места спрайта и до
+        # предпоследнего места, смещаем все спрайты влево (в списке)
+        new_sprite_group.add(sprite_group.sprites()[sprite_index + 1])
+    new_sprite_group.add(sprite_group.sprites()[main_sprite_index])  # Последняя, 15-я фишка - "активный" спрайт
+    return new_sprite_group
+
+
+active_sprite_index = None
 running = True
 while running:  # Игра:
-    screen.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
     size = width, height = screen.get_size()
+    for event in pygame.event.get():  # Отслеживаем события:
+        if event.type == pygame.QUIT:
+            running = False  # Остановим работу программы, если был нажат "крестик"
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = event.pos  # Получаем координаты курсора, если клавиша мыши была нажата.
+            for sprite in holes.sprites():
+                if x in range(sprite.rect[0], sprite.rect[0] + sprite.rect[2] + 1) \
+                   and y in range(sprite.rect[1], sprite.rect[1] + sprite.rect[3] + 1):  # Проверяем, находится ли
+                    # курсор в области определения какого-либо спрайта
+                    active_sprite_index = holes.sprites().index(sprite)  # Определяем индекс такого "активного" спрайта
+                    # в списке спрайтов группы
+                    holes = move(holes, active_sprite_index)  # Переделаем группу спрайтов так, чтобы спрайт, которого
+                    # мы коснулись, был поверх других, т.е. отрисовывался последним -  был 15-й фишкой
+                    dx, dy = event.pos[0] - sprite.rect[0], event.pos[1] - sprite.rect[1]  # Расположение курсора в
+                    # спрайте
+                    break
+        if event.type == pygame.MOUSEBUTTONUP:
+            active_sprite_index = None  # Если отпустить клавишу - "активный" спрайт перестаёт быть "активным"
+        if event.type == pygame.MOUSEMOTION:
+            if active_sprite_index is not None:
+                holes.sprites()[-1].update()  # Если курсор движется, и "активный" спрайт есть - спрайт смещается
+    screen.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
     pygame.draw.polygon(screen, 'blue', triangle_position(width, height))  # Нарисовал основной треугольник на дисплей
-    holes = pygame.sprite.Group()  # Создал группу спрайтов
-    for _ in range(len(holes_positions(triangle_position(width, height)))):  # Добавляю в группу спрайты:
-        Hole(holes)
     holes.draw(screen)  # Нарисовал эту группу спрайтов-отверстий
     pygame.display.flip()  # Обновление дисплея
-    while pygame.event.wait().type != pygame.QUIT:
-        running = False  # Остановим работу программы, если был нажат "крестик"
 pygame.quit()
