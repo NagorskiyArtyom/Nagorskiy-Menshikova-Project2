@@ -2,6 +2,8 @@ import math
 import os
 import sys
 import pygame
+import pygame_gui
+import Main_Window
 
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
@@ -115,29 +117,59 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         # точное расположение куросра в ней - тоже
 
 
-if __name__ == '__main__':  # Работа программы:
-    pygame.init()  # Инициализация pygame
-    screen = pygame.display.set_mode((800, 693))  # Создали screen - дисплей игры
+def terminate():  # Функция, прерывающая всю работу
+    pygame.quit()
+    sys.exit()
 
+
+def MainGame(window: pygame.surface.Surface):  # Игра:
     complexity = 1  # Этот момент будет подробнее описываться, но пока что уровень сложности - 1
-    shapes = {1: Triangle(screen), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
+    shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
     things = Things(1, shape, "yandex-logo.png")  # Фишки
+    manager = pygame_gui.UIManager(window.get_size())
+    exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
+                                                                          window.get_height() - 50 - shape.height),
+                                                                         (176, 63)),
+                                               text='Выйти',
+                                               manager=manager)
+    return_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
+                                                                            window.get_height() - 50 + 63 + 15
+                                                                            - shape.height), (176, 63)),
+                                                 text='Заново',
+                                                 manager=manager)
+    clock = pygame.time.Clock()
+    running_in_MainGame = True
+    while running_in_MainGame:  # Игра:
+        time_delta = clock.tick(60) / 1000.0
 
-    running = True
-    while running:  # Игра:
-        for event in pygame.event.get():  # Отслеживаем события:
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+        for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
+            if event_in_MainGame.type == pygame.QUIT:
+                terminate()
+
+            if event_in_MainGame.type == pygame.MOUSEBUTTONDOWN:
                 things.get_click(pygame.mouse.get_pos())
-            if event.type == pygame.MOUSEMOTION:
-                things.get_move(screen, pygame.mouse.get_pos())
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event_in_MainGame.type == pygame.MOUSEMOTION:
+                things.get_move(window, pygame.mouse.get_pos())
+            if event_in_MainGame.type == pygame.MOUSEBUTTONUP:
                 things.get_end_click()
-        screen.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
+
+            if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event_in_MainGame.ui_element == return_button:
+                    MainGame(window)
+                elif event_in_MainGame.ui_element == exit_button:
+                    Main_Window.MainWindow(window)
+            manager.process_events(event_in_MainGame)
+
+        window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
         shape.render()  # Отрисовка фигуры
-        things.render(screen)  # Отрисовка фишек
+        things.render(window)  # Отрисовка фишек
+        manager.update(time_delta)
+        manager.draw_ui(window)
         pygame.display.flip()  # Обновление дисплея
-    pygame.quit()
+
+
+if __name__ == '__main__':  # Работа программы:
+    pygame.init()
+    MainGame(pygame.display.set_mode((800, 693)))
