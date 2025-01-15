@@ -24,14 +24,14 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
 class Triangle:
     def __init__(self, window: pygame.surface.Surface):
         self.window = window
-        self.width = window.width - 50 * 2  # Значение стороны равностороннего треугольника c отступами по 50 пикслей
+        self.width = window.get_width() - 50 * 2  # Значение стороны равностороннего треугольника c отступами по 50 пикслей
         # от краёв окна
         self.height = int((self.width // 2) * math.sqrt(3))  # Значение высоты этого треугольника
 
     def get_coords(self):  # Функция, которая выдаёт координаты вершин треугольника, для его отрисовки
-        return [(50, self.window.height - 50),
-                (self.window.width * 0.5, self.window.height - 50 - self.height),
-                (self.window.width - 50, self.window.height - 50)]
+        return [(50, self.window.get_height() - 50),
+                (self.window.get_width() * 0.5, self.window.get_height() - 50 - self.height),
+                (self.window.get_width() - 50, self.window.get_height() - 50)]
 
     def render(self):  # Функция, отрисовывающая треугольник
         pygame.draw.polygon(self.window, 'blue', self.get_coords())
@@ -97,12 +97,12 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         x, y = mouse_pos
         if x - self.dx < 0:
             x = self.dx
-        elif x - self.dx + 2 * self.hole_radius > window.width:
-            x = window.width - 2 * self.hole_radius + self.dx
+        elif x - self.dx + 2 * self.hole_radius > window.get_width():
+            x = window.get_width() - 2 * self.hole_radius + self.dx
         if y - self.dy < 0:
             y = self.dy
-        elif y - self.dy + 2 * self.hole_radius > window.height:
-            y = window.height - 2 * self.hole_radius + self.dy
+        elif y - self.dy + 2 * self.hole_radius > window.get_height():
+            y = window.get_height() - 2 * self.hole_radius + self.dy
         return x, y
 
     def get_move(self, window, mouse_pos):  # Функция, описывающая действие, при перемещении курсора мыши
