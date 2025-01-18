@@ -128,12 +128,13 @@ def MainGame(window: pygame.surface.Surface):  # Игра:
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
     things = Things(1, shape, "yandex-logo.png")  # Фишки
-    manager = pygame_gui.UIManager(window.get_size())
+    manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")
     exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
                                                                           window.get_height() - 50 - shape.height),
                                                                          (176, 63)),
                                                text='Выйти',
-                                               manager=manager)
+                                               manager=manager,
+                                               object_id="#exit")
     return_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
                                                                             window.get_height() - 50 + 63 + 15
                                                                             - shape.height), (176, 63)),
