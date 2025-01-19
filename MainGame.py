@@ -39,31 +39,192 @@ class Triangle:
         pygame.draw.polygon(self.window, (0, 0, 255), self.get_coords())
 
 
+class Cross:
+    def __init__(self, window: pygame.surface.Surface):
+        self.window = window
+        self.side = window.get_height() - 50 * 2
+        self.space = 30
+        self.radius = (self.side - 8 * 30) // 14
+
+    def get_coords(self):  # Функция, которая выдаёт координаты вершин треугольника, для его отрисовки
+        return [(50 + self.space * 2 + self.radius * 4, self.window.get_height() - 50),
+                (50 + self.space * 6 + self.radius * 10, self.window.get_height() - 50),
+                (50 + self.space * 6 + self.radius * 10,
+                 self.window.get_height() - (50 + self.space * 2 + self.radius * 4)),
+                (50 + self.space * 8 + self.radius * 14,
+                 self.window.get_height() - (50 + self.space * 2 + self.radius * 4)),
+                (50 + self.space * 8 + self.radius * 14,
+                 self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50 + self.space * 6 + self.radius * 10,
+                 self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50 + self.space * 6 + self.radius * 10,
+                 self.window.get_height() - (50 + self.space * 8 + self.radius * 14)),
+                (50 + self.space * 2 + self.radius * 4,
+                 self.window.get_height() - (50 + self.space * 8 + self.radius * 14)),
+                (50 + self.space * 2 + self.radius * 4,
+                 self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50, self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50, self.window.get_height() - (50 + self.space * 2 + self.radius * 4)),
+                (50 + self.space * 2 + self.radius * 4,
+                 self.window.get_height() - (50 + self.space * 2 + self.radius * 4))]
+
+    def render(self):  # Функция, отрисовывающая треугольник
+        pygame.draw.polygon(self.window, (0, 0, 255), self.get_coords())
+
+
+class Cropped_Diamond:
+    def __init__(self, window: pygame.surface.Surface):
+        self.window = window
+        self.side = window.get_height() - 50 * 2
+        self.space = 30
+        self.radius = (self.side - 8 * 30) // 14
+
+    def get_coords(self):  # Функция, которая выдаёт координаты вершин треугольника, для его отрисовки
+        return [(50 + self.space * 2 + self.radius * 4, self.window.get_height() - 50),
+                (50 + self.space * 6 + self.radius * 10, self.window.get_height() - 50),
+                (50 + self.space * 8 + self.radius * 14,
+                 self.window.get_height() - (50 + self.space * 2 + self.radius * 4)),
+                (50 + self.space * 8 + self.radius * 14,
+                 self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50 + self.space * 6 + self.radius * 10,
+                 self.window.get_height() - (50 + self.space * 8 + self.radius * 14)),
+                (50 + self.space * 2 + self.radius * 4,
+                 self.window.get_height() - (50 + self.space * 8 + self.radius * 14)),
+                (50, self.window.get_height() - (50 + self.space * 6 + self.radius * 10)),
+                (50, self.window.get_height() - (50 + self.space * 2 + self.radius * 4))]
+
+    def render(self):  # Функция, отрисовывающая треугольник
+        pygame.draw.polygon(self.window, (0, 0, 255), self.get_coords())
+
+
 class Things:  # Класс, посвящённый всем фишкам, как группе
     def __init__(self, the_complexity, figure, image):
         self.active_thing_index, self.dx, self.dy = None, None, None
-        self.hole_radius = int(0.05 * figure.width)  # Радиус фишки
-        # НИЖЕ ДАННЫЕ ДЛЯ ФИГУРЫ - ТРЕУГОЛЬНИК
-        self.part_x = (figure.width - 250) // 8  # Часть по x - расстояние от проекции центра одной фишки на нижнюю
-        # сторону треугольника до другой
-        self.part_y = (figure.height - 115 + self.hole_radius) // 5  # Часть по y - расстояние от проекции центра одного
-        # спрайта на высоту треугольника до другой проекции
-        # ВЫШЕ ДАННЫЕ ДЛЯ ФИГУРЫ - ТРЕУГОЛЬНИК
+        self.hole_radius = 0
         self.things_group = pygame.sprite.Group()  # Группа спрайтов-фишек
-        self.image = pygame.transform.scale(load_image(image), (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу
-        # загрузим изображение каждой фишки и подгоним его под её размер
+        self.image = image
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
     def add_things(self, figure, the_complexity):
         if the_complexity == 1:  # Если мы проходим превый уровень - фигура - треугольник
+            self.hole_radius = int(0.05 * figure.width)
+            image = pygame.transform.scale(load_image(self.image),
+                                           (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу
+            # загрузим изображение каждой фишки и подгоним его под её размер
+            part_x = (figure.width - 250) // 8
+            part_y = (figure.height - 115 + self.hole_radius) // 5
             for row in range(0, 5):  # Проходим по ряду
                 for col in range(4 - row, 4 + row + 1, 2):  # Проходим по столбцу
                     thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
                     # группу спрайтов-фишек
-                    thing.image = self.image  # Присваеваем ей изображение
+                    thing.image = image  # Присваеваем ей изображение
                     thing.rect = thing.image.get_rect()  # Присваеваем ей размер
-                    x = figure.get_coords()[0][0] + 126 + col * self.part_x - self.hole_radius
-                    y = figure.get_coords()[1][1] + 115 + self.part_y * row - self.hole_radius
+                    x = figure.get_coords()[0][0] + 126 + col * part_x - self.hole_radius
+                    y = figure.get_coords()[1][1] + 115 + part_y * row - self.hole_radius
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+        elif the_complexity == 2:
+            self.hole_radius = figure.radius
+            space = figure.space
+            image = pygame.transform.scale(load_image(self.image),
+                                           (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу загрузим изображение
+            # каждой фишки и подгоним его под её размер
+            for row in range(1, 3):  # Проходим по ряду
+                for col in range(1, 4):  # Проходим по столбцу
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[0][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[6][1] + row * space + 2 * self.hole_radius * (row - 1)
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+            for row in range(1, 4):  # Проходим по ряду
+                for col in range(1, 8):  # Проходим по столбцу
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[-2][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[4][1] + row * space + 2 * self.hole_radius * (row - 1)
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+            for row in range(2):  # Проходим по ряду
+                for col in range(1, 4):  # Проходим по столбцу
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[-1][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[-1][1] + row * space + 2 * self.hole_radius * row
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+        elif the_complexity == 3:
+            self.hole_radius = figure.radius
+            space = figure.space
+            image = pygame.transform.scale(load_image(self.image),
+                                           (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу загрузим изображение
+            # каждой фишки и подгоним его под её размер
+            for row in range(1, 3):  # Проходим по ряду
+                for col in range(1, 4):  # Проходим по столбцу
+                    if row == 2 and col == 1:
+                        thing = pygame.sprite.Sprite(
+                            self.things_group)  # Создаём фишку, которая автоматически запишется в
+                        # группу спрайтов-фишек
+                        thing.image = image  # Присваеваем ей изображение
+                        thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                        x = figure.get_coords()[0][0] - 2 * self.hole_radius
+                        y = figure.get_coords()[4][1] + row * space + 2 * self.hole_radius * (row - 1)
+                        thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+                    elif row == 2 and col == 3:
+                        thing = pygame.sprite.Sprite(
+                            self.things_group)  # Создаём фишку, которая автоматически запишется в
+                        # группу спрайтов-фишек
+                        thing.image = image  # Присваеваем ей изображение
+                        thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                        x = figure.get_coords()[0][0] + (col + 1) * space + 2 * self.hole_radius * col
+                        y = figure.get_coords()[4][1] + row * space + 2 * self.hole_radius * (row - 1)
+                        thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[0][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[4][1] + row * space + 2 * self.hole_radius * (row - 1)
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+            for row in range(1, 4):  # Проходим по ряду
+                for col in range(1, 8):  # Проходим по столбцу
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[-2][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[3][1] + row * space + 2 * self.hole_radius * (row - 1)
+                    thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+            for row in range(2):  # Проходим по ряду
+                for col in range(1, 4):  # Проходим по столбцу
+                    if row == 0 and col == 1:
+                        thing = pygame.sprite.Sprite(
+                            self.things_group)  # Создаём фишку, которая автоматически запишется в
+                        # группу спрайтов-фишек
+                        thing.image = image  # Присваеваем ей изображение
+                        thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                        x = figure.get_coords()[0][0] - 2 * self.hole_radius
+                        y = figure.get_coords()[-1][1] + row * space + 2 * self.hole_radius * row
+                        thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+                    elif row == 0 and col == 3:
+                        thing = pygame.sprite.Sprite(
+                            self.things_group)  # Создаём фишку, которая автоматически запишется в
+                        # группу спрайтов-фишек
+                        thing.image = image  # Присваеваем ей изображение
+                        thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                        x = figure.get_coords()[0][0] + (col + 1) * space + 2 * self.hole_radius * col
+                        y = figure.get_coords()[-1][1] + row * space + 2 * self.hole_radius * row
+                        thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
+
+                    thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
+                    # группу спрайтов-фишек
+                    thing.image = image  # Присваеваем ей изображение
+                    thing.rect = thing.image.get_rect()  # Присваеваем ей размер
+                    x = figure.get_coords()[0][0] + col * space + 2 * self.hole_radius * (col - 1)
+                    y = figure.get_coords()[-1][1] + row * space + 2 * self.hole_radius * row
                     thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
 
     def render(self, window):  # Функция, отрисовывающая каждую фишку группы
@@ -123,19 +284,17 @@ def terminate():  # Функция, прерывающая всю работу
 
 
 def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
-    shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
+    shapes = {1: Triangle(window), 2: Cross(window), 3: Cropped_Diamond(window), 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
-    things = Things(1, shape, "yandex-logo.png")  # Фишки
+    things = Things(complexity, shape, "yandex-logo.png")  # Фишки
     manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")
-    exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
-                                                                          window.get_height() - 50 - shape.height),
-                                                                         (176, 63)),
+    exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 125, 50),
+                                                                         (125, 50)),
                                                text='Выйти',
                                                manager=manager)
-    return_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
-                                                                            window.get_height() - 50 + 63 + 15
-                                                                            - shape.height), (176, 63)),
+    return_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 125, 50 + 50 +
+                                                                            25), (125, 50)),
                                                  text='Заново',
                                                  manager=manager)
     clock = pygame.time.Clock()
