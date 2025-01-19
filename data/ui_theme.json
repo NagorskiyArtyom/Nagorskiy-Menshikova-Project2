@@ -1,31 +1,34 @@
 {
   "button": {
     "colours": {
-      "normal_bg": "#00F000",
-      "hovered_bg": "#35393e",
-      "disabled_bg": "#25292e",
-      "selected_bg": "#193754",
-
+      "normal_bg": "#FF8000",
+      "hovered_bg": "#CC6600",
+      "disabled_bg": "#D9CCBF",
+      "selected_bg": "#663300",
+      "active_bg": "#663300",
       "normal_text": "#0000FF",
-      "hovered_text": "#FFFFFF",
-      "selected_text": "#FFFFFF",
-      "disabled_text": "#6d736f",
-      "normal_border": "#FF0000",
-      "hovered_border": "#B0B0B0",
-      "disabled_border": "#808080",
-      "selected_border": "#8080B0",
-      "active_border": "#8080B0"
+      "hovered_text": "#0000FF",
+      "selected_text": "#0000FF",
+      "disabled_text": "#7090EC",
+      "normal_border": "#CC6600",
+      "hovered_border": "#994C00",
+      "disabled_border": "#D9CCBF",
+      "selected_border": "#663300",
+      "active_border": "#663300"
     },
     "misc": {
       "shape": "rounded_rectangle",
       "shape_corner_radius": "10",
       "border_width": "1",
       "shadow_width": "2"
+    },
+    "font": {
+      "size": 20
     }
   },
-  "#exit": {
-    "colours": {
-      "normal_bg": "#FFFF00"
+  "#buttons_in_menu": {
+    "font": {
+      "size": 35
     }
   }
 }

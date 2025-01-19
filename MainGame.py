@@ -36,7 +36,7 @@ class Triangle:
                 (self.window.get_width() - 50, self.window.get_height() - 50)]
 
     def render(self):  # Функция, отрисовывающая треугольник
-        pygame.draw.polygon(self.window, 'blue', self.get_coords())
+        pygame.draw.polygon(self.window, (0, 0, 255), self.get_coords())
 
 
 class Things:  # Класс, посвящённый всем фишкам, как группе
@@ -122,8 +122,7 @@ def terminate():  # Функция, прерывающая всю работу
     sys.exit()
 
 
-def MainGame(window: pygame.surface.Surface):  # Игра:
-    complexity = 1  # Этот момент будет подробнее описываться, но пока что уровень сложности - 1
+def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
@@ -133,8 +132,7 @@ def MainGame(window: pygame.surface.Surface):  # Игра:
                                                                           window.get_height() - 50 - shape.height),
                                                                          (176, 63)),
                                                text='Выйти',
-                                               manager=manager,
-                                               object_id="#exit")
+                                               manager=manager)
     return_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
                                                                             window.get_height() - 50 + 63 + 15
                                                                             - shape.height), (176, 63)),
@@ -158,7 +156,7 @@ def MainGame(window: pygame.surface.Surface):  # Игра:
 
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event_in_MainGame.ui_element == return_button:
-                    MainGame(window)
+                    MainGame(window, complexity)
                 elif event_in_MainGame.ui_element == exit_button:
                     Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
@@ -169,8 +167,3 @@ def MainGame(window: pygame.surface.Surface):  # Игра:
         manager.update(time_delta)
         manager.draw_ui(window)
         pygame.display.flip()  # Обновление дисплея
-
-
-if __name__ == '__main__':  # Работа программы:
-    pygame.init()
-    MainGame(pygame.display.set_mode((800, 693)))

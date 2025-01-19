@@ -1,31 +1,52 @@
 import pygame
 import pygame_gui
+from MainGame import terminate, MainGame
 
-import Main_Window
-from MainGame import terminate, Things, Triangle
+
+def draw_text(window, text_info, position, colour, size):
+    font = pygame.font.Font(None, size)
+    text = font.render(text_info, True, colour)
+    window.blit(text, text.get_rect(center=position))
 
 
 def MainMenu(window: pygame.surface.Surface):  # Игра:
-    manager = pygame_gui.UIManager(window.get_size())
-    btn1 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((50, window.get_height() // 2 - 80),
-                                                                         (160, 160)),
-                                               text='Выйти',
-                                               manager=manager)
-    btn2 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((50 + 160 + 20,
-                                                                            window.get_height() // 2 - 80),
-                                                                           (160, 160)),
-                                                 text='Заново',
-                                                 manager=manager)
-    btn3 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((50 + 160 * 2 + 20 * 2,
-                                                                            window.get_height() // 2 - 80),
-                                                                           (160, 160)),
-                                                 text='Заново',
-                                                 manager=manager)
-    btn4 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((50 + 160 * 3 + 20 * 3
-                                                                            , window.get_height() // 2 - 80),
-                                                                           (160, 160)),
-                                                 text='Заново',
-                                                 manager=manager)
+    manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")
+    btn1 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() // 2 - 30 - 2 * 160, 225),
+                                                                  (160, 160)),
+                                        text='1',
+                                        manager=manager,
+                                        object_id="#buttons_in_menu")
+
+    btn2 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() // 2 - 10 - 160, 225),
+                                                                  (160, 160)),
+                                        text='2',
+                                        manager=manager,
+                                        object_id="#buttons_in_menu")
+    btn3 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() // 2 + 10, 225),
+                                                                  (160, 160)),
+                                        text='3',
+                                        manager=manager,
+                                        object_id="#buttons_in_menu")
+    btn4 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() // 2 + 30 + 160, 225),
+                                                                  (160, 160)),
+                                        text='4',
+                                        manager=manager,
+                                        object_id="#buttons_in_menu")
+    random_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((50, 535),
+                                                                           (window.get_width() // 2 - 50 - 10, 80)),
+                                                 text='Рандом',
+                                                 manager=manager,
+                                                 object_id="#buttons_in_menu")
+    creative_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() // 2 + 10, 535),
+                                                                             (window.get_width() // 2 - 50 - 10, 80)),
+                                                   text='Пользовательский',
+                                                   manager=manager,
+                                                   object_id="#buttons_in_menu")
+    random_button.disable()
+    creative_button.disable()
+    flag = False
+
+    complexity = None
     clock = pygame.time.Clock()
     running_in_MainGame = True
     while running_in_MainGame:  # Игра:
@@ -35,22 +56,33 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
             if event_in_MainGame.type == pygame.QUIT:
                 terminate()
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
-                if event_in_MainGame.ui_element == btn1:
-                    pass
-                elif event_in_MainGame.ui_element == btn2:
+                if event_in_MainGame.ui_element in [btn1, btn2, btn3, btn4]:
+                    flag = True
+                    random_button.enable()
+                    creative_button.enable()
+                    complexity = int(event_in_MainGame.ui_element.text)
+                elif event_in_MainGame.ui_element == random_button:
+                    MainGame(window, complexity)
+                elif event_in_MainGame.ui_element == creative_button:
                     pass
             manager.process_events(event_in_MainGame)
 
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
         manager.update(time_delta)
         manager.draw_ui(window)
-        font = pygame.font.Font(None, 50)
-        text = font.render("Hello, Pygame!", True, (100, 255, 100))
-        text_x = window.get_width() // 2 - text.get_width() // 2
-        text_y = window.get_height() // 2 - text.get_height() // 2
-        text_w = text.get_width()
-        text_h = text.get_height()
-        window.blit(text, (text_x, text_y))
+        draw_text(window, 'Дорогой пользователь!', (window.get_width() // 2, 75), (0, 0, 255), 50)
+        draw_text(window, 'Пожалуйста, выберите уровень', (window.get_width() // 2, 125), (0, 0, 255), 50)
+        draw_text(window, 'сложности с 1-го по 4-й:', (window.get_width() // 2, 175), (0, 0, 255), 50)
+        if flag:
+            draw_text(window, 'Пожалуйста, выберите режим игры',
+                      (window.get_width() // 2, 435), (0, 0, 255), 50)
+            draw_text(window, '(способ выбора пустой ячейки):',
+                      (window.get_width() // 2, 485), (0, 0, 255), 50)
+        else:
+            draw_text(window, 'Пожалуйста, выберите режим игры',
+                      (window.get_width() // 2, 435), "#7090EC", 50)
+            draw_text(window, '(способ выбора пустой ячейки):',
+                      (window.get_width() // 2, 485), "#7090EC", 50)
         pygame.display.flip()  # Обновление дисплея
 
 
