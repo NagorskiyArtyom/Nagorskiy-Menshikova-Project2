@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 from MainGame import terminate, MainGame
+from select_circle import CreativeGame
 
 
 def draw_text(window, text_info, position, colour, size):
@@ -64,7 +65,7 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
                 elif event_in_MainGame.ui_element == random_button:
                     MainGame(window, complexity)
                 elif event_in_MainGame.ui_element == creative_button:
-                    pass
+                    CreativeGame(window, complexity)
             manager.process_events(event_in_MainGame)
 
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
