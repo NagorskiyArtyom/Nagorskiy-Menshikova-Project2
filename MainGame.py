@@ -5,8 +5,6 @@ import pygame
 import pygame_gui
 import Main_Window
 
-holes = []
-colors = [(200, 200, 200)] * 15
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
     fullname = os.path.join('data', name)  # Получаем полный путь к файлу, содержащему изображение нашего спрайта
@@ -56,7 +54,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         # загрузим изображение каждой фишки и подгоним его под её размер
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
-    def add_things(self, figure, the_complexity, k=0):
+    def add_things(self, figure, the_complexity):
         if the_complexity == 1:  # Если мы проходим превый уровень - фигура - треугольник
             for row in range(0, 5):  # Проходим по ряду
                 for col in range(4 - row, 4 + row + 1, 2):  # Проходим по столбцу
@@ -67,8 +65,6 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                     x = figure.get_coords()[0][0] + 126 + col * self.part_x - self.hole_radius
                     y = figure.get_coords()[1][1] + 115 + self.part_y * row - self.hole_radius
                     thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
-                    holes.append((k, x, y))
-                    k += 1
 
     def render(self, window):  # Функция, отрисовывающая каждую фишку группы
         self.things_group.draw(window)
@@ -120,10 +116,6 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         self.active_thing_index, self.dx, self.dy = None, None, None  # "Активная" фишка исчезает, а следовательно и
         # точное расположение куросра в ней - тоже
 
-    def draw_circles(self, scr):
-        for (i, x, y) in holes:
-            pygame.draw.circle(scr, colors[i], (x + 35, y + 35), self.hole_radius)
-
 
 def terminate():  # Функция, прерывающая всю работу
     pygame.quit()
@@ -131,7 +123,6 @@ def terminate():  # Функция, прерывающая всю работу
 
 
 def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
-    global colors
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
@@ -151,7 +142,7 @@ def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
     running_in_MainGame = True
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
-        x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
                 terminate()
@@ -172,8 +163,7 @@ def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
 
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
         shape.render()  # Отрисовка фигуры
-        things.draw_circles(window)
-        things.render(window)
+        things.render(window)  # Отрисовка фишек
         manager.update(time_delta)
         manager.draw_ui(window)
         pygame.display.flip()  # Обновление дисплея
