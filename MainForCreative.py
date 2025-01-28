@@ -6,7 +6,7 @@ import pygame_gui
 import Main_Window
 from MainGame import MainGame
 
-empty_cells, holes = [], []
+holes = []
 h = [(365, 117), (309, 222), (421, 222), (253, 327), (365, 327), (477, 327),
     (197, 432), (309, 432), (421, 432), (533, 432), (141, 537), (253, 537),
     (365, 537), (477, 537), (89, 537)]
@@ -59,9 +59,9 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         self.things_group = pygame.sprite.Group()  # Группа спрайтов-фишек
         self.image = pygame.transform.scale(load_image(image), (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу
         # загрузим изображение каждой фишки и подгоним его под её размер
-
+        self.empty_cells = []
         self.choosen_sprite = choosen_sprite
-        empty_cells.append(self.choosen_sprite)
+        self.empty_cells.append(self.choosen_sprite)
 
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
@@ -104,21 +104,34 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
 
             check_dis1 = math.sqrt((365 - 253) ** 2 + (117 - 327) ** 2) # рассчитывала расстояние между ячейками стоящими через один друг от друга
             # в данном примере 1 и 4 ячейка
-            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2) # а здесь 7 и 9 (координаты из переменной h)
+            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2) # а здесь 7 и 9 (координаты из переменной h) 238.0 224.0
 
             snapped = False
             for (i, x, y) in holes:
+
                 # Вычисляем расстояние между центром спрайта и центром кружочка
                 distance = math.sqrt((sprite_center[0] - (x + self.hole_radius)) ** 2 +
                                      (sprite_center[1] - (y + self.hole_radius)) ** 2)
                 start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
                 if (distance <= self.hole_radius and (start_active == check_dis1 or start_active == check_dis2) and
-                        (x, y) in empty_cells):  # Если расстояние меньше радиуса кружочка
-                    active_sprite.rect.center = (x + self.hole_radius, y + self.hole_radius)
-                    empty_cells.remove((x, y))
-                    empty_cells.append((self.start_x, self.start_y))
-                    snapped = True
-                    break
+                        (x, y) in self.empty_cells):  # Если расстояние меньше радиуса кружочка
+                    dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2) # кружок который впоследствии будем удалять
+                    if dell_cell not in self.empty_cells: # проверяем удаляли мы эту фишку ранее
+
+                        active_sprite.rect.center = (x + self.hole_radius, y + self.hole_radius)
+
+                        self.empty_cells.remove((x, y))
+                        self.empty_cells.append((self.start_x, self.start_y))
+
+                        for sprite in self.things_group:
+                            # Проверяем совпадение координат центра
+                            if sprite.rect.centerx - 35 == dell_cell[0] and sprite.rect.centery - 35 == dell_cell[1]:
+                                self.things_group.remove(sprite)  # Удаляем спрайт из группы
+
+                                self.empty_cells.append(dell_cell)
+
+                        snapped = True
+                        break
 
             if not snapped:
                 # Возвращаем спрайт на начальное место, если не попал в кружочек
