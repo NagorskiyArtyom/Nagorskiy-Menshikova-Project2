@@ -1,16 +1,16 @@
 import math
 import os
+import random
 import sys
 import pygame
 import pygame_gui
 import Main_Window
-from MainGame import MainGame
 
 holes = []
 h = [(365, 117), (309, 222), (421, 222), (253, 327), (365, 327), (477, 327),
-    (197, 432), (309, 432), (421, 432), (533, 432), (141, 537), (253, 537),
-    (365, 537), (477, 537), (89, 537)]
-colors = [(200, 200, 200)] * 15
+     (197, 432), (309, 432), (421, 432), (533, 432), (141, 537), (253, 537),
+     (365, 537), (477, 537), (589, 537)]
+
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
     fullname = os.path.join('data', name)  # Получаем полный путь к файлу, содержащему изображение нашего спрайта
@@ -46,7 +46,7 @@ class Triangle:
 
 
 class Things:  # Класс, посвящённый всем фишкам, как группе
-    def __init__(self, the_complexity, figure, image, choosen_sprite):
+    def __init__(self, the_complexity, figure, image, selected_sprite):
         self.start_x, self.start_y = None, None
         self.active_thing_index, self.dx, self.dy = None, None, None
         self.hole_radius = int(0.05 * figure.width)  # Радиус фишки
@@ -60,8 +60,8 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         self.image = pygame.transform.scale(load_image(image), (2 * self.hole_radius, 2 * self.hole_radius))  # Сразу
         # загрузим изображение каждой фишки и подгоним его под её размер
         self.empty_cells = []
-        self.choosen_sprite = choosen_sprite
-        self.empty_cells.append(self.choosen_sprite)
+        self.selected_sprite = selected_sprite
+        self.empty_cells.append(self.selected_sprite)
 
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
@@ -73,9 +73,9 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                     y = figure.get_coords()[1][1] + 115 + self.part_y * row - self.hole_radius
                     holes.append((k, x, y))
                     k += 1
-                    if (x, y) != self.choosen_sprite:
-                        thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически запишется в
-                        # группу спрайтов-фишек
+                    if (x, y) != self.selected_sprite:
+                        thing = pygame.sprite.Sprite(self.things_group)  # Создаём фишку, которая автоматически
+                        # запишется в группу спрайтов-фишек
                         thing.image = self.image  # Присваеваем ей изображение
                         thing.rect = thing.image.get_rect()  # Присваеваем ей размер
                         thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
@@ -97,14 +97,16 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 self.start_x, self.start_y = thing.rect.x, thing.rect.y
                 break
 
-    def snap_to_hole(self): # функция для проверки возможности поставить спрайт в ячейку
+    def snap_to_hole(self):  # функция для проверки возможности поставить спрайт в ячейку
         if self.active_thing_index is not None:
             active_sprite = self.things_group.sprites()[-1]
             sprite_center = (active_sprite.rect.centerx, active_sprite.rect.centery)
 
-            check_dis1 = math.sqrt((365 - 253) ** 2 + (117 - 327) ** 2) # рассчитывала расстояние между ячейками стоящими через один друг от друга
+            check_dis1 = math.sqrt((365 - 253) ** 2 + (117 - 327) ** 2)  # рассчитывала расстояние между ячейками
+            # стоящими через один друг от друга
             # в данном примере 1 и 4 ячейка
-            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2) # а здесь 7 и 9 (координаты из переменной h) 238.0 224.0
+            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2)  # а здесь 7 и 9 (координаты из переменной h)
+            # 238.0 224.0
 
             snapped = False
             for (i, x, y) in holes:
@@ -115,8 +117,9 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
                 if (distance <= self.hole_radius and (start_active == check_dis1 or start_active == check_dis2) and
                         (x, y) in self.empty_cells):  # Если расстояние меньше радиуса кружочка
-                    dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2) # кружок который впоследствии будем удалять
-                    if dell_cell not in self.empty_cells: # проверяем удаляли мы эту фишку ранее
+                    dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2)  # кружок который впоследствии будем
+                    # удалять
+                    if dell_cell not in self.empty_cells:  # проверяем удаляли мы эту фишку ранее
 
                         active_sprite.rect.center = (x + self.hole_radius, y + self.hole_radius)
 
@@ -174,7 +177,14 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
 
     def draw_circles(self, scr):
         for (i, x, y) in holes:
-            pygame.draw.circle(scr, colors[i], (x + 35, y + 35), self.hole_radius)
+            pygame.draw.circle(scr, (204, 229, 255), (x + 35, y + 35), self.hole_radius)
+
+    def boarder_for_empty_cels(self, window):
+        for circle in self.empty_cells:
+            pygame.draw.circle(window, (0, 235, 0), (circle[0] + self.hole_radius, circle[1] + self.hole_radius),
+                               self.hole_radius, width=5)
+        pygame.draw.circle(window, (117, 117, 117), (self.start_x + self.hole_radius, self.start_y + self.hole_radius),
+                           self.hole_radius, width=5)
 
 
 def terminate():  # Функция, прерывающая всю работу
@@ -182,12 +192,9 @@ def terminate():  # Функция, прерывающая всю работу
     sys.exit()
 
 
-def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):  # Игра:
-    global colors
-    shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
-    # доступен только треугольник
-    shape = shapes[complexity]  # Фигура соответствует уровню
-    things = Things(1, shape, "yandex-logo.png", choosen_sprite)  # Фишки
+def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игра:
+    shape = Triangle(window)  # Фигура соответствует уровню
+    things = Things(1, shape, "yandex-logo.png", selected_sprite)  # Фишки
     manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")
     exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((window.get_width() - 50 - 176,
                                                                           window.get_height() - 50 - shape.height),
@@ -201,31 +208,40 @@ def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):
                                                  manager=manager)
     clock = pygame.time.Clock()
     running_in_MainGame = True
+    flag = False
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
-        x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
                 terminate()
 
             if event_in_MainGame.type == pygame.MOUSEBUTTONDOWN:
                 things.get_click(pygame.mouse.get_pos())
+                if things.active_thing_index is not None:
+                    return_button.disable()
+                    exit_button.disable()
+                    flag = True
             if event_in_MainGame.type == pygame.MOUSEMOTION:
                 things.get_move(window, pygame.mouse.get_pos())
             if event_in_MainGame.type == pygame.MOUSEBUTTONUP:
+                return_button.enable()
+                exit_button.enable()
+                flag = False
                 things.get_end_click()
 
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event_in_MainGame.ui_element == return_button:
-                    MainForCreative(window, complexity, choosen_sprite)
+                    MainForCreative(window, selected_sprite)
                 elif event_in_MainGame.ui_element == exit_button:
                     Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
 
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
-        shape.render()  # Отрисовка фигуры
-        things.draw_circles(window)
-        things.render(window)
         manager.update(time_delta)
         manager.draw_ui(window)
+        shape.render()  # Отрисовка фигуры
+        things.draw_circles(window)
+        if flag:
+            things.boarder_for_empty_cels(window)
+        things.render(window)
         pygame.display.flip()  # Обновление дисплея
