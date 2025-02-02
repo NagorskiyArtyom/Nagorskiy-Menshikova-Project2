@@ -28,7 +28,31 @@
   },
   "#buttons_in_menu": {
     "font": {
-      "size": 35
+      "size": 28
+    }
+  },
+  "#exit_in_menu": {
+    "font": {
+      "size": 19
+    },
+    "colours": {
+      "normal_bg": "#FF8000",
+      "hovered_bg": "#CC6600",
+      "disabled_bg": "#D9CCBF",
+      "selected_bg": "#663300",
+      "active_bg": "#663300",
+      "normal_text": "#0000FF",
+      "hovered_text": "#0000FF",
+      "selected_text": "#0000FF",
+      "disabled_text": "#7090EC",
+      "normal_border": "#000000",
+      "hovered_border": "#000000",
+      "disabled_border": "#000000",
+      "selected_border": "#000000",
+      "active_border": "#000000"
+    },
+    "misc": {
+      "shape_corner_radius": "10"
     }
   }
 }

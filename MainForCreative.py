@@ -1,6 +1,5 @@
 import math
 import os
-import random
 import sys
 import pygame
 import pygame_gui
@@ -46,7 +45,7 @@ class Triangle:
 
 
 class Things:  # Класс, посвящённый всем фишкам, как группе
-    def __init__(self, the_complexity, figure, image, selected_sprite):
+    def __init__(self, the_complexity, figure, image, selected_sprite=None):
         self.start_x, self.start_y = None, None
         self.active_thing_index, self.dx, self.dy = None, None, None
         self.hole_radius = int(0.05 * figure.width)  # Радиус фишки
