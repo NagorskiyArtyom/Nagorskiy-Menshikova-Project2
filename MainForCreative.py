@@ -3,6 +3,7 @@ import os
 import sys
 import pygame
 import pygame_gui
+
 import Main_Window
 import button_exit
 from MainGame import MainGame
@@ -48,6 +49,7 @@ class Triangle:
 
 class Things:  # Класс, посвящённый всем фишкам, как группе
     def __init__(self, the_complexity, figure, image, choosen_sprite):
+        self.no_moves = False
         self.start_x, self.start_y = None, None
         self.active_thing_index, self.dx, self.dy = None, None, None
         self.hole_radius = int(0.05 * figure.width)  # Радиус фишки
@@ -63,6 +65,12 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         self.empty_cells = []
         self.choosen_sprite = choosen_sprite
         self.empty_cells.append(self.choosen_sprite)
+
+        self.check_dis1 = math.sqrt((365 - 253) ** 2 + (
+                    117 - 327) ** 2)  # рассчитывала расстояние между ячейками стоящими через один друг от друга
+        # в данном примере 1 и 4 ячейка
+        self.check_dis2 = math.sqrt(
+            (197 - 421) ** 2 + (432 - 432) ** 2)  # а здесь 7 и 9 (координаты из переменной h) 238.0 224.0
 
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
@@ -98,38 +106,46 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 self.start_x, self.start_y = thing.rect.x, thing.rect.y
                 break
 
-    def check_possible_moves(self, window, things):
-        font = pygame.font.Font(None, 36)
-        no_moves_text = font.render("Нет возможных ходов!", True, (255, 0, 0))
-
-        possible_move = False
-
-        for sprite in things.things_group:
-            sprite_center = (sprite.rect.centerx, sprite.rect.centery)
-
+    def check_possible_moves(self):
+        """Проверяет, можно ли сделать хотя бы один ход. Если нет - включает флаг `self.no_moves`."""
+        self.no_moves = False  # По умолчанию считаем, что ходы возможны
+        k = 0
+        for sprite in self.things_group.sprites():
+            sprite_x, sprite_y = sprite.rect.centerx - 35, sprite.rect.centery - 35  # Центр фишки
             for (i, x, y) in holes:
-                distance = math.sqrt((sprite_center[0] - (x + things.hole_radius)) ** 2 +
-                                     (sprite_center[1] - (y + things.hole_radius)) ** 2)
-
-                if distance <= things.hole_radius and (x, y) in things.empty_cells:
-                    possible_move = True
+                # Вычисляем расстояние между центром спрайта и центром кружочка
+                start_active = math.sqrt((sprite_x - x) ** 2 + (sprite_y - y) ** 2)
+                dell_cell = ((x + sprite_x) // 2, (y + sprite_y) // 2)
+                if (start_active == self.check_dis1 or start_active == self.check_dis2) and (x, y) in self.empty_cells \
+                        and dell_cell not in self.empty_cells:  # Если расстояние меньше радиуса кружочка
+                    k += 1
                     break
-            if possible_move:
-                break
+        if k == 0:
+            self.no_moves = True
+        if len(self.things_group.sprites()) == 1:
+            self.no_moves = None
 
-        if not possible_move:
-            window.blit(no_moves_text,
-                        (window.get_width() // 2 - no_moves_text.get_width() // 2, 20))  # Выводим сообщение
+    def draw_no_moves_message(self, window):
+        """Выводит текст 'Нет возможных ходов!' на экран, если `self.no_moves == True`."""
+        if self.no_moves:
+            font = pygame.font.Font(None, 50)
+            no_moves_text = font.render("Нет возможных ходов!", True, (255, 0, 0))
+            window.blit(no_moves_text, (window.get_width() // 2 - no_moves_text.get_width() // 2, 0))
+        elif self.no_moves is None:
+            font = pygame.font.Font(None, 50)
+            no_moves_text = font.render("Вы выиграли!", True, (0, 255, 0))
+            window.blit(no_moves_text, (window.get_width() // 2 - no_moves_text.get_width() // 2, 0))
 
+    def get_end_click(self, window):
+        """Вызывается при отпускании фишки."""
+        self.snap_to_hole()
+        self.check_possible_moves()  # Проверяем возможные ходы после движения
+        self.active_thing_index, self.dx, self.dy = None, None, None
 
     def snap_to_hole(self): # функция для проверки возможности поставить спрайт в ячейку
         if self.active_thing_index is not None:
             active_sprite = self.things_group.sprites()[-1]
             sprite_center = (active_sprite.rect.centerx, active_sprite.rect.centery)
-
-            check_dis1 = math.sqrt((365 - 253) ** 2 + (117 - 327) ** 2) # рассчитывала расстояние между ячейками стоящими через один друг от друга
-            # в данном примере 1 и 4 ячейка
-            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2) # а здесь 7 и 9 (координаты из переменной h) 238.0 224.0
 
             snapped = False
             for (i, x, y) in holes:
@@ -138,7 +154,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 distance = math.sqrt((sprite_center[0] - (x + self.hole_radius)) ** 2 +
                                      (sprite_center[1] - (y + self.hole_radius)) ** 2)
                 start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
-                if (distance <= self.hole_radius and (start_active == check_dis1 or start_active == check_dis2) and
+                if (distance <= self.hole_radius and (start_active == self.check_dis1 or start_active == self.check_dis2) and
                         (x, y) in self.empty_cells):  # Если расстояние меньше радиуса кружочка
                     dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2) # кружок который впоследствии будем удалять
                     if dell_cell not in self.empty_cells: # проверяем удаляли мы эту фишку ранее
@@ -192,10 +208,6 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             mouse_pos = self.mouse_position_with_thing(window, mouse_pos)
             self.things_group.sprites()[-1].rect[:2] = mouse_pos[0] - self.dx, mouse_pos[1] - self.dy
 
-    def get_end_click(self):  # Функция, описывающая действие, при отпуске клавиши мыши
-        self.snap_to_hole()
-        self.active_thing_index, self.dx, self.dy = None, None, None  # "Активная" фишка исчезает, а следовательно и
-        # точное расположение куросра в ней - тоже
 
     def draw_circles(self, scr):
         for (i, x, y) in holes:
@@ -238,7 +250,7 @@ def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):
             if event_in_MainGame.type == pygame.MOUSEMOTION:
                 things.get_move(window, pygame.mouse.get_pos())
             if event_in_MainGame.type == pygame.MOUSEBUTTONUP:
-                things.get_end_click()
+                things.get_end_click(window)
 
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event_in_MainGame.ui_element == return_button:
@@ -247,12 +259,11 @@ def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):
                     button_exit.exit_prompt(window)
                     #Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
-
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
         shape.render()  # Отрисовка фигуры
         things.draw_circles(window)
         things.render(window)
         manager.update(time_delta)
         manager.draw_ui(window)
-        things.check_possible_moves(window, things)
+        things.draw_no_moves_message(window)
         pygame.display.flip()  # Обновление дисплея
