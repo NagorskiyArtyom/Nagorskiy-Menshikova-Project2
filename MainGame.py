@@ -4,6 +4,8 @@ import sys
 import pygame
 import pygame_gui
 import Main_Window
+import button_exit
+import MainMenu
 
 holes = []
 colors = [(200, 200, 200)] * 15
@@ -130,7 +132,7 @@ def terminate():  # Функция, прерывающая всю работу
     sys.exit()
 
 
-def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
+def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  # Игра:
     global colors
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
@@ -149,6 +151,7 @@ def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
                                                  manager=manager)
     clock = pygame.time.Clock()
     running_in_MainGame = True
+    exit_prompt_open = False  # Флаг для окна подтверждения
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
         x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
@@ -167,13 +170,15 @@ def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
                 if event_in_MainGame.ui_element == return_button:
                     MainGame(window, complexity)
                 elif event_in_MainGame.ui_element == exit_button:
-                    Main_Window.MainWindow(window)
+                    exit_prompt_open = True  # Открываем окно подтверждения
+                    button_exit.exit_prompt(window)  # Отображаем окно подтверждения
             manager.process_events(event_in_MainGame)
 
-        window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
-        shape.render()  # Отрисовка фигуры
-        things.draw_circles(window)
-        things.render(window)
-        manager.update(time_delta)
-        manager.draw_ui(window)
-        pygame.display.flip()  # Обновление дисплея
+        if not exit_prompt_open:  # Если окно подтверждения не открыто, продолжаем игру
+            window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
+            shape.render()  # Отрисовка фигуры
+            things.draw_circles(window)
+            things.render(window)
+            manager.update(time_delta)
+            manager.draw_ui(window)
+            pygame.display.flip()  # Обновление дисплея

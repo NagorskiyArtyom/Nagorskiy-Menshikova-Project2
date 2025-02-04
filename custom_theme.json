@@ -1,0 +1,17 @@
+{
+    "button": {
+        "#center_button": {
+            "normal_bg": "#87cefa",
+            "hovered_bg": "#4682b4",
+            "active_bg": "#1e90ff",
+            "border_width": 2,
+            "border_colour": "#ffffff",
+            "shape": "rounded_rectangle",
+            "corner_radius": 15,
+            "text": {
+                "font_size": 24,
+                "text_colour": "#ffffff"
+            }
+        }
+    }
+}

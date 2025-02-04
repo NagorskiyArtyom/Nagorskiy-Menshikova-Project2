@@ -3,6 +3,7 @@ import pygame
 import pygame_gui
 from MainForCreative import MainForCreative, Things
 from MainGame import Triangle, Things, MainGame
+import button_exit
 
 colors = [(170, 200, 230)] * 15 # Цвета для всех ячеек
 pygame.init()
@@ -69,6 +70,9 @@ def CreativeGame(window, complexity, shape=None): # Функци для полз
                     else:
                         choosen_sprite = clicks_pos[-2]
                         MainForCreative(window, complexity, choosen_sprite)
+                elif event.ui_element == exit_button:
+                    button_exit.exit_prompt(window)
+                    # Main_Window.MainWindow(window)
 
             manager.process_events(event)
 

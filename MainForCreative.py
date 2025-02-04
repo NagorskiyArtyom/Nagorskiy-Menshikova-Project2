@@ -4,6 +4,7 @@ import sys
 import pygame
 import pygame_gui
 import Main_Window
+import button_exit
 from MainGame import MainGame
 
 holes = []
@@ -96,6 +97,30 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 # курсора мыши в фишке
                 self.start_x, self.start_y = thing.rect.x, thing.rect.y
                 break
+
+    def check_possible_moves(self, window, things):
+        font = pygame.font.Font(None, 36)
+        no_moves_text = font.render("Нет возможных ходов!", True, (255, 0, 0))
+
+        possible_move = False
+
+        for sprite in things.things_group:
+            sprite_center = (sprite.rect.centerx, sprite.rect.centery)
+
+            for (i, x, y) in holes:
+                distance = math.sqrt((sprite_center[0] - (x + things.hole_radius)) ** 2 +
+                                     (sprite_center[1] - (y + things.hole_radius)) ** 2)
+
+                if distance <= things.hole_radius and (x, y) in things.empty_cells:
+                    possible_move = True
+                    break
+            if possible_move:
+                break
+
+        if not possible_move:
+            window.blit(no_moves_text,
+                        (window.get_width() // 2 - no_moves_text.get_width() // 2, 20))  # Выводим сообщение
+
 
     def snap_to_hole(self): # функция для проверки возможности поставить спрайт в ячейку
         if self.active_thing_index is not None:
@@ -219,7 +244,8 @@ def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):
                 if event_in_MainGame.ui_element == return_button:
                     MainForCreative(window, complexity, choosen_sprite)
                 elif event_in_MainGame.ui_element == exit_button:
-                    Main_Window.MainWindow(window)
+                    button_exit.exit_prompt(window)
+                    #Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
 
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
@@ -228,4 +254,5 @@ def MainForCreative(window: pygame.surface.Surface, complexity, choosen_sprite):
         things.render(window)
         manager.update(time_delta)
         manager.draw_ui(window)
+        things.check_possible_moves(window, things)
         pygame.display.flip()  # Обновление дисплея
