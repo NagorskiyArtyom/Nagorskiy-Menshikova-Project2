@@ -1,9 +1,8 @@
 import math
 import pygame
 import pygame_gui
-from MainForCreative import MainForCreative, Things
-from MainGame import Triangle, Things, MainGame
-import button_exit
+
+from MainGame import Triangle, Things
 
 colors = [(170, 200, 230)] * 15 # Цвета для всех ячеек
 pygame.init()
@@ -24,7 +23,7 @@ def draw_text(window, text_info, position, colour, size):
     window.blit(text, text.get_rect(center=position))
 
 def CreativeGame(window, complexity, shape=None): # Функци для ползовательского режима
-    global colors, choosen_sprite
+    global colors
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}
     shape = shapes[complexity]  # Фигура соответствует уровню
     things = Things(1, shape, "yandex-logo.png")  # Фишки
@@ -67,12 +66,6 @@ def CreativeGame(window, complexity, shape=None): # Функци для полз
                     if (len(clicks_pos) > 1 and clicks_pos[-2] is None) or (len(clicks_pos) == 1 and clicks_pos[0] is None):
                         please = "Пожалуйста, "
                         false_mess = "выберите пустую ячейку"
-                    else:
-                        choosen_sprite = clicks_pos[-2]
-                        MainForCreative(window, complexity, choosen_sprite)
-                elif event.ui_element == exit_button:
-                    button_exit.exit_prompt(window)
-                    # Main_Window.MainWindow(window)
 
             manager.process_events(event)
 

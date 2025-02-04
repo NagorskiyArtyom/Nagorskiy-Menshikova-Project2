@@ -4,8 +4,6 @@ import sys
 import pygame
 import pygame_gui
 import Main_Window
-import button_exit
-import MainMenu
 
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
@@ -123,9 +121,8 @@ def terminate():  # Функция, прерывающая всю работу
     pygame.quit()
     sys.exit()
 
-    
-def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  # Игра:
-    global colors
+
+def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
     shape = shapes[complexity]  # Фигура соответствует уровню
@@ -143,7 +140,6 @@ def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  
                                                  manager=manager)
     clock = pygame.time.Clock()
     running_in_MainGame = True
-    exit_prompt_open = False  # Флаг для окна подтверждения
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
 
@@ -162,16 +158,12 @@ def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  
                 if event_in_MainGame.ui_element == return_button:
                     MainGame(window, complexity)
                 elif event_in_MainGame.ui_element == exit_button:
-                    exit_prompt_open = True  # Открываем окно подтверждения
-                    button_exit.exit_prompt(window)  # Отображаем окно подтверждения
+                    Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
 
-
-        if not exit_prompt_open:  # Если окно подтверждения не открыто, продолжаем игру
-            window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
-            shape.render()  # Отрисовка фигуры
-            things.draw_circles(window)
-            things.render(window)
-            manager.update(time_delta)
-            manager.draw_ui(window)
-            pygame.display.flip()  # Обновление дисплея
+        window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
+        shape.render()  # Отрисовка фигуры
+        things.render(window)  # Отрисовка фишек
+        manager.update(time_delta)
+        manager.draw_ui(window)
+        pygame.display.flip()  # Обновление дисплея
