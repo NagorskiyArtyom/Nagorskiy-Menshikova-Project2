@@ -7,8 +7,6 @@ import Main_Window
 import button_exit
 import MainMenu
 
-holes = []
-colors = [(200, 200, 200)] * 15
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
     fullname = os.path.join('data', name)  # Получаем полный путь к файлу, содержащему изображение нашего спрайта
@@ -58,7 +56,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         # загрузим изображение каждой фишки и подгоним его под её размер
         self.add_things(figure, the_complexity)  # Установим начальное расположение фишек в фигуре
 
-    def add_things(self, figure, the_complexity, k=0):
+    def add_things(self, figure, the_complexity):
         if the_complexity == 1:  # Если мы проходим превый уровень - фигура - треугольник
             for row in range(0, 5):  # Проходим по ряду
                 for col in range(4 - row, 4 + row + 1, 2):  # Проходим по столбцу
@@ -69,8 +67,6 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                     x = figure.get_coords()[0][0] + 126 + col * self.part_x - self.hole_radius
                     y = figure.get_coords()[1][1] + 115 + self.part_y * row - self.hole_radius
                     thing.rect.x, thing.rect.y = (x, y)  # Присваиваем ей координаты
-                    holes.append((k, x, y))
-                    k += 1
 
     def render(self, window):  # Функция, отрисовывающая каждую фишку группы
         self.things_group.draw(window)
@@ -122,16 +118,12 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         self.active_thing_index, self.dx, self.dy = None, None, None  # "Активная" фишка исчезает, а следовательно и
         # точное расположение куросра в ней - тоже
 
-    def draw_circles(self, scr):
-        for (i, x, y) in holes:
-            pygame.draw.circle(scr, colors[i], (x + 35, y + 35), self.hole_radius)
-
 
 def terminate():  # Функция, прерывающая всю работу
     pygame.quit()
     sys.exit()
 
-
+    
 def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  # Игра:
     global colors
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
@@ -154,7 +146,7 @@ def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  
     exit_prompt_open = False  # Флаг для окна подтверждения
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
-        x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
                 terminate()
@@ -173,6 +165,7 @@ def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  
                     exit_prompt_open = True  # Открываем окно подтверждения
                     button_exit.exit_prompt(window)  # Отображаем окно подтверждения
             manager.process_events(event_in_MainGame)
+
 
         if not exit_prompt_open:  # Если окно подтверждения не открыто, продолжаем игру
             window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
