@@ -5,7 +5,7 @@ import MainMenu
 
 def buttonStart():
     # Загружаем настройки из JSON
-    with open("custom_theme.json", "r", encoding="utf-8") as file:
+    with open("data/custom_theme.json", "r", encoding="utf-8") as file:
         config = json.load(file)
 
     # Инициализация pygame
@@ -38,8 +38,6 @@ def buttonStart():
     text_surface = font.render("Начать", True, text_colour)
     text_rect = text_surface.get_rect(center=button_rect.center)
 
-    button_color = normal_bg
-    mouse_over = False
     mouse_click = False
 
     running = True
@@ -48,14 +46,12 @@ def buttonStart():
 
         # Обработка состояния кнопки (обычное, наведенное, активное)
         if button_rect.collidepoint(pygame.mouse.get_pos()):
-            mouse_over = True
             if pygame.mouse.get_pressed()[0]:  # Если кнопка мыши нажата
                 mouse_click = True
                 button_color = active_bg
             else:
                 button_color = hovered_bg
         else:
-            mouse_over = False
             button_color = normal_bg
 
         # Рисуем кнопку с учетом состояния

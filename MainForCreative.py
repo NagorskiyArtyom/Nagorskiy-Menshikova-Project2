@@ -3,9 +3,7 @@ import os
 import sys
 import pygame
 import pygame_gui
-import Main_Window
 import button_exit
-from MainGame import MainGame
 
 holes = []
 h = [(365, 117), (309, 222), (421, 222), (253, 327), (365, 327), (477, 327),
@@ -21,8 +19,8 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
-        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения (обычно это будет
-            # цвет фона, который хочется сделать прозрачным).
+        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения, обычно это будет
+            # цвет фона, который хочется сделать прозрачным.
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)  # Переданный цвет станет прозрачным
     else:
@@ -33,7 +31,7 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
 class Triangle:
     def __init__(self, window: pygame.surface.Surface):
         self.window = window
-        self.width = window.get_width() - 50 * 2  # Значение стороны равностороннего треугольника c отступами по 50
+        self.width = window.get_width() - 50 * 2  # Значение стороны равностороннего треугольника с отступами по 50
         # пикслей от краёв окна
         self.height = int((self.width // 2) * math.sqrt(3))  # Значение высоты этого треугольника
 
@@ -135,7 +133,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             no_moves_text = font.render("Вы выиграли!", True, (0, 255, 0))
             window.blit(no_moves_text, (window.get_width() // 2 - no_moves_text.get_width() // 2, 0))
 
-    def get_end_click(self, window):
+    def get_end_click(self):
         """Вызывается при отпускании фишки."""
         self.snap_to_hole()
         self.check_possible_moves()  # Проверяем возможные ходы после движения
@@ -145,22 +143,15 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         if self.active_thing_index is not None:
             active_sprite = self.things_group.sprites()[-1]
             sprite_center = (active_sprite.rect.centerx, active_sprite.rect.centery)
-
-            check_dis1 = math.sqrt((365 - 253) ** 2 + (117 - 327) ** 2)  # рассчитывала расстояние между ячейками
-            # стоящими через один друг от друга
-            # в данном примере 1 и 4 ячейка
-            check_dis2 = math.sqrt((197 - 421) ** 2 + (432 - 432) ** 2)  # а здесь 7 и 9 (координаты из переменной h)
-            # 238.0 224.0
-
             snapped = False
             for (i, x, y) in holes:
-
                 # Вычисляем расстояние между центром спрайта и центром кружочка
                 distance = math.sqrt((sprite_center[0] - (x + self.hole_radius)) ** 2 +
                                      (sprite_center[1] - (y + self.hole_radius)) ** 2)
                 start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
-                if (distance <= self.hole_radius and (start_active == self.check_dis1 or start_active == self.check_dis2) and
-                        (x, y) in self.empty_cells):  # Если расстояние меньше радиуса кружочка
+                if (distance <= self.hole_radius and (start_active == self.check_dis1 or
+                                                      start_active == self.check_dis2) and (x, y) in self.empty_cells):
+                    # Если расстояние меньше радиуса кружочка
                     dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2)  # кружок который впоследствии будем
                     # удалять
                     if dell_cell not in self.empty_cells:  # проверяем удаляли мы эту фишку ранее
@@ -185,7 +176,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 active_sprite.rect.x, active_sprite.rect.y = self.start_x, self.start_y
 
     def new_things_group(self, active_thing_index):  # Функция, переделывающая группу фишек так, чтобы фишка, которой
-        # мы коснулись, была поверх других, т.е. Отрисовывалась последней - была 15-й фишкой
+        #  Мы коснулись, была поверх других, т.е. Отрисовывалась последней - была 15-й фишкой
         new_thing_group = pygame.sprite.Group()
         for thing_index in range(active_thing_index):  # Порядок фишек до "активной" фишки остаётся неизменным
             new_thing_group.add(self.things_group.sprites()[thing_index])
@@ -213,7 +204,6 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         if self.active_thing_index is not None:  # Если есть "активная" фишка, то поменяем её координаты
             mouse_pos = self.mouse_position_with_thing(window, mouse_pos)
             self.things_group.sprites()[-1].rect[:2] = mouse_pos[0] - self.dx, mouse_pos[1] - self.dy
-
 
     def draw_circles(self, scr):
         for (i, x, y) in holes:
@@ -267,14 +257,14 @@ def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игр�
                 return_button.enable()
                 exit_button.enable()
                 flag = False
-                things.get_end_click(window)
+                things.get_end_click()
 
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event_in_MainGame.ui_element == return_button:
                     MainForCreative(window, selected_sprite)
                 elif event_in_MainGame.ui_element == exit_button:
                     button_exit.exit_prompt(window)
-                    #Main_Window.MainWindow(window)
+                    #  Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
         window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
         manager.update(time_delta)

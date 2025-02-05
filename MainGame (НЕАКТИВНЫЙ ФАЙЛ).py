@@ -3,12 +3,11 @@ import os
 import sys
 import pygame
 import pygame_gui
-import Main_Window
 import button_exit
-import MainMenu
 
 holes = []
 colors = [(200, 200, 200)] * 15
+
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
     fullname = os.path.join('data', name)  # Получаем полный путь к файлу, содержащему изображение нашего спрайта
@@ -18,8 +17,8 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
-        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения (обычно это будет
-            # цвет фона, который хочется сделать прозрачным).
+        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения, обычно это будет
+            # цвет фона, который хочется сделать прозрачным.
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)  # Переданный цвет станет прозрачным
     else:
@@ -30,7 +29,7 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
 class Triangle:
     def __init__(self, window: pygame.surface.Surface):
         self.window = window
-        self.width = window.get_width() - 50 * 2  # Значение стороны равностороннего треугольника c отступами по 50
+        self.width = window.get_width() - 50 * 2  # Значение стороны равностороннего треугольника с отступами по 50
         # пикслей от краёв окна
         self.height = int((self.width // 2) * math.sqrt(3))  # Значение высоты этого треугольника
 
@@ -89,7 +88,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                 break
 
     def new_things_group(self, active_thing_index):  # Функция, переделывающая группу фишек так, чтобы фишка, которой
-        # мы коснулись, была поверх других, т.е. отрисовывалась последней - была 15-й фишкой
+        # Мы коснулись, была поверх других, т.е. отрисовывалась последней - была 15-й фишкой
         new_thing_group = pygame.sprite.Group()
         for thing_index in range(active_thing_index):  # Порядок фишек до "активной" фишки остаётся неизменным
             new_thing_group.add(self.things_group.sprites()[thing_index])
@@ -132,7 +131,7 @@ def terminate():  # Функция, прерывающая всю работу
     sys.exit()
 
 
-def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  # Игра:
+def MainGame(window: pygame.surface.Surface, complexity):  # Игра:
     global colors
     shapes = {1: Triangle(window), 2: None, 3: None, 4: None}  # Словарь фигур, соответствующих уровням, пока что
     # доступен только треугольник
@@ -154,7 +153,6 @@ def MainGame(window: pygame.surface.Surface, complexity, choosen_sprite=None):  
     exit_prompt_open = False  # Флаг для окна подтверждения
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
-        x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
                 terminate()

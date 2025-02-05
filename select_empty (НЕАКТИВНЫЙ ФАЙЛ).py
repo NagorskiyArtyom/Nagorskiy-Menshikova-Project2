@@ -1,10 +1,8 @@
-import button
 import pygame
 import math
 import os
 import sys
 import pygame_widgets
-from pygame import sprite
 from pygame_widgets.button import Button
 
 # Инициализация Pygame
@@ -15,8 +13,8 @@ width, height = 800, 693
 screen = pygame.display.set_mode((width, height))
 
 # Кнопки выхода и старта
-exitt = Button(screen, 520, 25, 200, 70, text='Выход', fontSize=30, margin=20, inactiveColour=(120, 160, 160),
-               hoverColour=(150, 0, 0), pressedColour=(20, 130, 120), radius=10)
+the_exit = Button(screen, 520, 25, 200, 70, text='Выход', fontSize=30, margin=20, inactiveColour=(120, 160, 160),
+                  hoverColour=(150, 0, 0), pressedColour=(20, 130, 120), radius=10)
 
 start = Button(screen, 520, 125, 200, 70, text='Начать игру', fontSize=30, margin=20, inactiveColour=(120, 160, 160),
                hoverColour=(150, 0, 0), pressedColour=(20, 130, 120), radius=10)
@@ -45,11 +43,11 @@ def holes_positions(triangle_coords):
     holes_coords = []
     for row in range(0, 5):
         for col in range(4 - row, 4 + row + 1, 2):
-            x = triangle_coords[0][0] + triangle_side * 5 // 28 + col * part_x - hole_radius
-            y = triangle_coords[1][1] + triangle_height * 25 // 139 + part_y * row - hole_radius
-            holes_coords.append((x, y))
+            holes_coords.append((triangle_coords[0][0] + triangle_side * 5 // 28 + col * part_x - hole_radius,
+                                 triangle_coords[1][1] + triangle_height * 25 // 139 + part_y * row - hole_radius))
 
     return holes_coords
+
 
 def load_image(name, colorkey=None):  # Возвращает Surface, на котором расположено изображение «в натуральную величину»
     fullname = os.path.join('data', name)  # Получаем полный путь к файлу, содержащему изображение нашего спрайта
@@ -59,8 +57,8 @@ def load_image(name, colorkey=None):  # Возвращает Surface, на ко�
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
-        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения (обычно это будет
-            # цвет фона, который хочется сделать прозрачным).
+        if colorkey == -1:  # Функция сама возьмет прозрачным цветом левый верхний угол изображения, обычно это будет
+            # цвет фона, который хочется сделать прозрачным.
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)  # Переданный цвет станет прозрачным
     else:
@@ -81,13 +79,14 @@ class Hole(pygame.sprite.Sprite):  # Объект - отверстие
     def update(self):  # Меняем координаты спрайта
         self.rect.x, self.rect.y = pygame.mouse.get_pos()[0] - dx, pygame.mouse.get_pos()[1] - dy
 
+
 holes = pygame.sprite.Group()  # Создал группу спрайтов
 for _ in range(len(holes_positions(triangle_position(width, height)))):  # Добавляю в группу спрайты:
     Hole(holes)
 
 
 def move(sprite_group, main_sprite_index):  # Функция, переделывающая группу спрайтов так, чтобы спрайт, которого мы
-    # коснулись, был поверх других, т.е. отрисовывался последним - был 15-й фишкой
+    # Коснулись, был поверх других, т.е. отрисовывался последним - был 15-й фишкой
     new_sprite_group = pygame.sprite.Group()
     for sprite_index in range(main_sprite_index):  # Порядок спрайтов до "активного" спрайта остаётся неизменным
         new_sprite_group.add(sprite_group.sprites()[sprite_index])
@@ -130,16 +129,16 @@ while running:
 
             if 520 <= x1 <= 720 and 125 <= y1 <= 195:
                 for sprite in holes.sprites():
-                    if x in range(sprite.rect[0], sprite.rect[0] + sprite.rect[2] + 1) \
-                            and y in range(sprite.rect[1],
-                                           sprite.rect[1] + sprite.rect[3] + 1):  # Проверяем, находится ли
+                    if sprite.rect.x in range(sprite.rect[0], sprite.rect[0] + sprite.rect[2] + 1) \
+                            and sprite.rect.y in range(sprite.rect[1],
+                                                       sprite.rect[1] + sprite.rect[3] + 1):  # Проверяем, находится ли
                         # курсор в области определения какого-либо спрайта
                         active_sprite_index = holes.sprites().index(
                             sprite)  # Определяем индекс такого "активного" спрайта
                         # в списке спрайтов группы
                         holes = move(holes,
                                      active_sprite_index)  # Переделаем группу спрайтов так, чтобы спрайт, которого
-                        # мы коснулись, был поверх других, т.е. отрисовывался последним -  был 15-й фишкой
+                        # Мы коснулись, был поверх других, т.е. отрисовывался последним - был 15-й фишкой
                         dx, dy = event.pos[0] - sprite.rect[0], event.pos[1] - sprite.rect[1]  # Расположение курсора в
                         # спрайте
                         break
@@ -148,5 +147,3 @@ while running:
         pygame.display.flip()  # Обновляем экран
 
 pygame.quit()
-
-

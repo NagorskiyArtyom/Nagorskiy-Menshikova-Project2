@@ -2,9 +2,10 @@ import pygame
 import json
 import subprocess
 
+
 def exit_prompt(window):
     # Загружаем настройки из JSON
-    with open("ct_exit.json", "r", encoding="utf-8") as file:
+    with open("data/ct_exit.json", "r", encoding="utf-8") as file:
         config = json.load(file)
 
     # Настройки окна
@@ -36,7 +37,6 @@ def exit_prompt(window):
     cancel_text = font.render(buttons["cancel"]["text"], True, cancel_text_color)
     cancel_text_rect = cancel_text.get_rect(center=cancel_button.center)
 
-    running = True
     json_window_open = True
     while json_window_open:
         screen.fill((255, 255, 255))  # Фон белый

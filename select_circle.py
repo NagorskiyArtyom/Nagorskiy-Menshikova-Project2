@@ -1,8 +1,6 @@
 import math
 import pygame
 import pygame_gui
-from MainForCreative import MainForCreative, Things
-from MainGame import Triangle, Things, MainGame
 import button_exit
 from MainForCreative import MainForCreative, Triangle, terminate
 

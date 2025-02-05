@@ -1,5 +1,4 @@
 import random
-
 import pygame
 import pygame_gui
 from MainForCreative import terminate, MainForCreative, h
@@ -33,8 +32,9 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
                                                    text='Вручную',
                                                    manager=manager,
                                                    object_id="#buttons_in_menu")
-    exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((11 * window.get_width() // 12 - (4 * window.get_width() // 12 -
-                                                                          2.5 * a * k) // 3, window.get_height() // 12 - a // 3),
+    exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((11 * window.get_width() // 12 -
+                                                                          (4 * window.get_width() // 12 - 2.5 * a * k)
+                                                                          // 3, window.get_height() // 12 - a // 3),
                                                                          ((4 * window.get_width() // 12 -
                                                                           2.5 * a * k) // 1.5, a // 1.5)),
                                                text='Выйти',
