@@ -1,9 +1,13 @@
 import math
 import os
 import sys
+import time
+
 import pygame
 import pygame_gui
 import button_exit
+import lose_window
+import win_window
 
 holes = []
 h = [(365, 117), (309, 222), (421, 222), (253, 327), (365, 327), (477, 327),
@@ -122,16 +126,14 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         if len(self.things_group.sprites()) == 1:
             self.no_moves = None
 
-    def draw_no_moves_message(self, window):
+    def draw_no_moves_message(self, window, selected_sprite):
         """Выводит текст 'Нет возможных ходов!' на экран, если `self.no_moves == True`."""
         if self.no_moves:
-            font = pygame.font.Font(None, 50)
-            no_moves_text = font.render("Нет возможных ходов!", True, (255, 0, 0))
-            window.blit(no_moves_text, (window.get_width() // 2 - no_moves_text.get_width() // 2, 0))
+            time.sleep(0.5)
+            lose_window.Lose(window, selected_sprite)
         elif self.no_moves is None:
-            font = pygame.font.Font(None, 50)
-            no_moves_text = font.render("Вы выиграли!", True, (0, 255, 0))
-            window.blit(no_moves_text, (window.get_width() // 2 - no_moves_text.get_width() // 2, 0))
+            time.sleep(0.5)
+            win_window.Win(window, selected_sprite)
 
     def get_end_click(self):
         """Вызывается при отпускании фишки."""
@@ -241,10 +243,11 @@ def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игр�
     flag = False
     while running_in_MainGame:  # Игра:
         time_delta = clock.tick(60) / 1000.0
+        things.draw_no_moves_message(window, selected_sprite)
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
-                terminate()
-
+                pygame.quit()
+                sys.exit()
             if event_in_MainGame.type == pygame.MOUSEBUTTONDOWN:
                 things.get_click(pygame.mouse.get_pos())
                 if things.active_thing_index is not None:
@@ -266,7 +269,7 @@ def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игр�
                     button_exit.exit_prompt(window)
                     #  Main_Window.MainWindow(window)
             manager.process_events(event_in_MainGame)
-        window.fill((204, 229, 255))  # Установил нежно-голубой цвет фона дисплея
+        window.fill((149, 192, 230))  # Установил нежно-голубой цвет фона дисплея
         manager.update(time_delta)
         manager.draw_ui(window)
         shape.render()  # Отрисовка фигуры
@@ -276,5 +279,4 @@ def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игр�
         things.render(window)
         manager.update(time_delta)
         manager.draw_ui(window)
-        things.draw_no_moves_message(window)
         pygame.display.flip()  # Обновление дисплея

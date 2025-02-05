@@ -1,9 +1,6 @@
+import sys
 import pygame
 import pygame_gui
-from MainForCreative import terminate
-
-pygame.init()
-win = pygame.display.set_mode((800, 693))
 
 
 def MainWindow(window):
@@ -20,7 +17,8 @@ def MainWindow(window):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                terminate()
+                pygame.quit()
+                sys.exit()
 
         window.fill((149, 192, 230))
         window.blit(text, (170, 200))

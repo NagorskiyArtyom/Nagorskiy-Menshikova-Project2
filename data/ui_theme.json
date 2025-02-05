@@ -52,7 +52,35 @@
       "active_border": "#000000"
     },
     "misc": {
-      "shape_corner_radius": "10"
+      "shape_corner_radius": "10",
+      "border_width": "1",
+      "shadow_width": "0"
+    }
+  },
+  "#exit_in_game": {
+    "colours": {
+      "normal_border": "#FF0000",
+      "hovered_border": "#FF0000",
+      "disabled_border": "#FF0000",
+      "selected_border": "#FF0000",
+      "active_border": "#FF0000"
+    },
+    "misc": {
+      "border_width": "2",
+      "shadow_width": "5"
+    }
+  },
+  "#cancel_in_game": {
+    "colours": {
+      "normal_border": "#00FF00",
+      "hovered_border": "#00FF00",
+      "disabled_border": "#00FF00",
+      "selected_border": "#00FF00",
+      "active_border": "#00FF00"
+    },
+    "misc": {
+      "border_width": "2",
+      "shadow_width": "5"
     }
   }
 }

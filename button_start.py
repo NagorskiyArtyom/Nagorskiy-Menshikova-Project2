@@ -1,20 +1,15 @@
+import sys
+
 import pygame
 import json
 import MainMenu
+from test2 import MovingText
 
 
-def buttonStart():
+def buttonStart(screen):
     # Загружаем настройки из JSON
     with open("data/custom_theme.json", "r", encoding="utf-8") as file:
         config = json.load(file)
-
-    # Инициализация pygame
-    pygame.init()
-
-    # Задаем размеры окна вручную, так как в JSON их нет
-    WIDTH, HEIGHT = 800, 600  # Фиксированные значения для окна
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Game Window")
 
     # Настройки кнопки
     button_config = config["button"]["#center_button"]
@@ -32,17 +27,25 @@ def buttonStart():
     # Создаем прямоугольник для кнопки
     button_width = 300  # Вы можете изменить эти значения или добавить в JSON
     button_height = 80
-    button_rect = pygame.Rect((WIDTH - button_width) // 2, (HEIGHT - button_height) // 2, button_width, button_height)
+    button_rect = pygame.Rect((screen.get_width() - button_width) // 2, 4 * screen.get_height() // 5 -
+                              button_height // 2, button_width, button_height)
 
     font = pygame.font.Font(None, font_size)
     text_surface = font.render("Начать", True, text_colour)
     text_rect = text_surface.get_rect(center=button_rect.center)
-
+    clock = pygame.time.Clock()
     mouse_click = False
+
+    font = pygame.font.Font(None, 36)
+    text_obj = MovingText(["Nagorskiy A. & Menshikova E.", "Яндекс лицей 2024-2025"],
+                          font)  # Создаем один объект текста
 
     running = True
     while running:
-        screen.fill((255, 255, 255))  # Фон белый
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
         # Обработка состояния кнопки (обычное, наведенное, активное)
         if button_rect.collidepoint(pygame.mouse.get_pos()):
@@ -54,6 +57,17 @@ def buttonStart():
         else:
             button_color = normal_bg
 
+        screen.fill((149, 192, 230))  # Заполняем фон
+        text_obj.update()
+        text_obj.draw(screen)
+
+        MainMenu.draw_text(screen, 'THE', (screen.get_width() // 2, screen.get_height() // 5),
+                           (0, 0, 255), 125)
+        MainMenu.draw_text(screen, 'PEG GAME', (screen.get_width() // 2, 2 * screen.get_height() // 5),
+                           (0, 0, 255), 125)
+        MainMenu.draw_text(screen, 'N.A & M.E', (screen.get_width() // 2, 3 * screen.get_height() // 5),
+                           (0, 0, 255), 50)
+
         # Рисуем кнопку с учетом состояния
         pygame.draw.rect(screen, button_color, button_rect, border_radius=corner_radius)
         pygame.draw.rect(screen, border_colour, button_rect, border_width,
@@ -63,17 +77,13 @@ def buttonStart():
         # Проверяем, был ли клик по кнопке
         if mouse_click and button_rect.collidepoint(pygame.mouse.get_pos()):
             running = False  # Закрываем текущее окно
-            MainMenu.MainMenu(pygame.display.set_mode((800, 693)))  # Запускаем главное меню
-
+            MainMenu.MainMenu(screen)  # Запускаем главное меню
         pygame.display.flip()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
+        clock.tick(60)
     pygame.quit()
 
 
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
-    buttonStart()
+    pygame.display.set_caption("THE PEG GAME. A.K.")
+    buttonStart(pygame.display.set_mode((800, 693)))

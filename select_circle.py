@@ -1,8 +1,10 @@
 import math
+import sys
+
 import pygame
 import pygame_gui
 import button_exit
-from MainForCreative import MainForCreative, Triangle, terminate
+from MainForCreative import MainForCreative, Triangle
 
 colors = [(170, 200, 230)] * 15  # Цвета для всех ячеек
 
@@ -43,7 +45,8 @@ def CreativeGame(window):  # Функци для ползовательског�
         x1, y1 = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                terminate()
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 selected_sprite = None  # координаты выбранной ячейки равны None
                 colors = [(170, 200, 230)] * 15
@@ -73,7 +76,7 @@ def CreativeGame(window):  # Функци для ползовательског�
 
             manager.process_events(event)
 
-        window_surface.fill((204, 229, 255))  # Фон
+        window_surface.fill((149, 192, 230))  # Фон
         # Рисуем сообщение, если оно есть
         draw_text(window_surface, please, (190, 30), (0, 0, 255), 40)  # Выводим сообщения
         draw_text(window_surface, false_mess, (190, 60), (0, 0, 255), 40)

@@ -1,8 +1,10 @@
 import random
+import sys
+
 import pygame
 import pygame_gui
-from MainForCreative import terminate, MainForCreative, h
-from Main_Window import MainWindow
+from MainForCreative import MainForCreative, h
+from button_start import buttonStart
 from select_circle import CreativeGame
 
 
@@ -48,14 +50,15 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
 
         for event_in_MainGame in pygame.event.get():  # Отслеживаем события:
             if event_in_MainGame.type == pygame.QUIT:
-                terminate()
+                pygame.quit()
+                sys.exit()
             if event_in_MainGame.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event_in_MainGame.ui_element == random_button:
                     MainForCreative(window, random.choice(h))
                 elif event_in_MainGame.ui_element == creative_button:
                     CreativeGame(window)
                 elif event_in_MainGame.ui_element == exit_button:
-                    MainWindow(window)
+                    buttonStart(window)
             manager.process_events(event_in_MainGame)
 
         bg = pygame.image.load('data/second_window.png')
@@ -67,7 +70,7 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
         pygame.draw.rect(window, (4, 29, 55),
                          pygame.Rect((window.get_width() // 6, window.get_height() // 6),
                                      (4 * window.get_width() // 6, 4 * window.get_height() // 6)),
-                         2, 15)
+                         1, 15)
         manager.update(time_delta)
         manager.draw_ui(window)
         draw_text(window, 'Дорогой пользователь!', (window.get_width() // 2, window.get_height() // 6 + 2 * a),
@@ -79,8 +82,3 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
                                                              window.get_height() // 6 + 4 * a),
                   (0, 0, 255), 40)
         pygame.display.flip()  # Обновление дисплея
-
-
-if __name__ == '__main__':  # Работа программы:
-    pygame.init()
-    MainMenu(pygame.display.set_mode((800, 693)))
