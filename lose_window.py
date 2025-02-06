@@ -2,7 +2,6 @@ import pygame
 import json
 import sys
 import pygame_gui
-
 import MainForCreative
 from button_start import buttonStart
 
@@ -22,7 +21,6 @@ def Lose(window, selected_sprite):
     a = 2 * window.get_height() // 27
 
     # Текст сообщения
-    text_config = config["text"]
     font = pygame.font.Font(None, 50)
     text1_surface = font.render('ПОРАЖЕНИЕ!', True, (225, 0, 0))
     text1_rect = text1_surface.get_rect(center=(WIDTH // 2, window.get_height() // 6 + 2.5 * a))

@@ -2,7 +2,6 @@ import math
 import os
 import sys
 import time
-
 import pygame
 import pygame_gui
 import button_exit
@@ -219,7 +218,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             pygame.draw.circle(scr, (204, 229, 255), (x + 35, y + 35), self.hole_radius)
 
     def boarder_for_empty_cels(self, window):
-        #Отображает возможные ходы: текущая фишка серым, возможные ходы — зелёным
+        #  Отображает возможные ходы: текущая фишка серым, возможные ходы — зелёным
         if self.active_thing_index is None:
             return  # Если фишка не выбрана, ничего не подсвечиваем
 
@@ -229,7 +228,8 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2)
             start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
 
-            if (start_active == self.check_dis1 or start_active == self.check_dis2) and dell_cell not in self.empty_cells:
+            if ((start_active == self.check_dis1 or start_active == self.check_dis2) and
+                    dell_cell not in self.empty_cells):
                 possible_moves.append((x, y))
 
         # Подсветка доступных мест для хода зелёным цветом
@@ -240,6 +240,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
         # Подсветка текущей выбранной фишки серым
         pygame.draw.circle(window, (117, 117, 117), (self.start_x + self.hole_radius, self.start_y + self.hole_radius),
                            self.hole_radius, width=5)
+
 
 def terminate():  # Функция, прерывающая всю работу
     pygame.quit()
