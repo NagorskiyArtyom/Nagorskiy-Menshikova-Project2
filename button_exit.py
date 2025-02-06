@@ -14,8 +14,6 @@ def exit_prompt(window):
 
     # Настройки окна
     WIDTH, HEIGHT = config["window"]["width"], config["window"]["height"]
-    pygame.display.set_caption(config["window"]["title"])
-
     k = window.get_width() // window.get_height()
     a = 2 * window.get_height() // 27
 

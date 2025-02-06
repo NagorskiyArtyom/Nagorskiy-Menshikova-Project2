@@ -85,4 +85,5 @@ def buttonStart(screen):
 if __name__ == '__main__':  # Запуск программы
     pygame.init()
     pygame.display.set_caption("THE PEG GAME. A.K.")
+    pygame.display.set_icon(img)
     buttonStart(pygame.display.set_mode((800, 693)))
