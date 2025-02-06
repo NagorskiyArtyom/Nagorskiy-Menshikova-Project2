@@ -176,6 +176,7 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             if not snapped:
                 # Возвращаем спрайт на начальное место, если не попал в кружочек
                 active_sprite.rect.x, active_sprite.rect.y = self.start_x, self.start_y
+            return snapped
 
     def new_things_group(self, active_thing_index):  # Функция, переделывающая группу фишек так, чтобы фишка, которой
         #  Мы коснулись, была поверх других, т.е. Отрисовывалась последней - была 15-й фишкой
@@ -212,12 +213,27 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
             pygame.draw.circle(scr, (204, 229, 255), (x + 35, y + 35), self.hole_radius)
 
     def boarder_for_empty_cels(self, window):
-        for circle in self.empty_cells:
-            pygame.draw.circle(window, (0, 235, 0), (circle[0] + self.hole_radius, circle[1] + self.hole_radius),
-                               self.hole_radius, width=5)
+        #Отображает возможные ходы: текущая фишка серым, возможные ходы — зелёным
+        if self.active_thing_index is None:
+            return  # Если фишка не выбрана, ничего не подсвечиваем
+
+        possible_moves = []  # Список возможных ходов
+
+        for x, y in self.empty_cells:
+            dell_cell = ((x + self.start_x) // 2, (y + self.start_y) // 2)
+            start_active = math.sqrt((self.start_x - x) ** 2 + (self.start_y - y) ** 2)
+
+            if (start_active == self.check_dis1 or start_active == self.check_dis2) and dell_cell not in self.empty_cells:
+                possible_moves.append((x, y))
+
+        # Подсветка доступных мест для хода зелёным цветом
+        for x, y in possible_moves:
+            pygame.draw.circle(window, (0, 255, 0), (x + self.hole_radius, y + self.hole_radius), self.hole_radius,
+                               width=5)
+
+        # Подсветка текущей выбранной фишки серым
         pygame.draw.circle(window, (117, 117, 117), (self.start_x + self.hole_radius, self.start_y + self.hole_radius),
                            self.hole_radius, width=5)
-
 
 def terminate():  # Функция, прерывающая всю работу
     pygame.quit()
