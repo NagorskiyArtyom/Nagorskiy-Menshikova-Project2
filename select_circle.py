@@ -29,6 +29,8 @@ def draw_text(window, text_info, position, colour, size):
 
 
 def CreativeGame(window):  # Функци для ползовательского режима
+    sound = pygame.mixer.Sound("data/mixkit-unlock-game-notification-253.wav")
+    sound.play()
     global colors
     shape = Triangle(window)  # Фигура соответствует уровню
     false_mess = ""  # Локальное сообщение внутри функции

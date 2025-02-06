@@ -6,6 +6,8 @@ from button_start import buttonStart
 
 
 def exit_prompt(window):
+    sound = pygame.mixer.Sound("data/mixkit-arrow-whoosh-1491 (mp3cut.net).wav")
+    sound.play()
     # Загружаем настройки из JSON
     with open("data/ct_exit.json", "r", encoding="utf-8") as file:
         config = json.load(file)
@@ -54,6 +56,8 @@ def exit_prompt(window):
                 if event.ui_element == cancel_button:
                     return
                 elif event.ui_element == exit_button:
+                    sound = pygame.mixer.Sound("data/mixkit-arrow-whoosh-1491 (mp3cut.net).wav")
+                    sound.play()
                     buttonStart(window)
             manager.process_events(event)
 

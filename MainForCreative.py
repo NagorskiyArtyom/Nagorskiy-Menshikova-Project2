@@ -99,6 +99,8 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                     and mouse_pos[1] in range(thing.rect[1],
                                               thing.rect[1] + thing.rect[3] + 1):  # Проверка: находится ли
                 # курсор в области какой-либо фишки
+                sound = pygame.mixer.Sound("data/mixkit-game-ball-tap-2073.wav")
+                sound.play()
                 self.active_thing_index = self.things_group.sprites().index(thing)  # Такая фишка будет "активной"
                 self.new_things_group(self.active_thing_index)  # Меняем группу так, чтобы эта "активная" фишка была
                 # поверх других, т.е последняя в отрисовке
@@ -171,9 +173,13 @@ class Things:  # Класс, посвящённый всем фишкам, ка�
                                 self.empty_cells.append(dell_cell)
 
                         snapped = True
+                        sound = pygame.mixer.Sound("data/mixkit-game-ball-tap-2073.wav")
+                        sound.play()
                         break
 
             if not snapped:
+                sound = pygame.mixer.Sound("data/zvuk-oshibki-vyibora.mp3")
+                sound.play()
                 # Возвращаем спрайт на начальное место, если не попал в кружочек
                 active_sprite.rect.x, active_sprite.rect.y = self.start_x, self.start_y
 
@@ -225,6 +231,8 @@ def terminate():  # Функция, прерывающая всю работу
 
 
 def MainForCreative(window: pygame.surface.Surface, selected_sprite):  # Игра:
+    sound = pygame.mixer.Sound("data/mixkit-unlock-game-notification-253.wav")
+    sound.play()
     shape = Triangle(window)  # Фигура соответствует уровню
     things = Things(1, shape, "yandex-logo.png", selected_sprite)  # Фишки
     manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")

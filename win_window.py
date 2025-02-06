@@ -8,6 +8,8 @@ from button_start import buttonStart
 
 
 def Win(window, selected_sprite):
+    sound = pygame.mixer.Sound("data/mixkit-game-level-completed-2059.wav")
+    sound.play()
     # Загружаем настройки из JSON
     with open("data/ct_exit.json", "r", encoding="utf-8") as file:
         config = json.load(file)
@@ -55,6 +57,8 @@ def Win(window, selected_sprite):
                 if event.ui_element == retry_button:
                     MainForCreative.MainForCreative(window, selected_sprite)
                 elif event.ui_element == exit_button:
+                    sound = pygame.mixer.Sound("data/mixkit-arrow-whoosh-1491 (mp3cut.net).wav")
+                    sound.play()
                     buttonStart(window)
             manager.process_events(event)
 

@@ -1,6 +1,6 @@
 import random
 import sys
-
+import pygame.mixer
 import pygame
 import pygame_gui
 from MainForCreative import MainForCreative, h
@@ -15,6 +15,8 @@ def draw_text(window, text_info, position, colour, size):
 
 
 def MainMenu(window: pygame.surface.Surface):  # Игра:
+    sound = pygame.mixer.Sound("data/mixkit-unlock-game-notification-253.wav")
+    sound.play()
     k = window.get_width() // window.get_height()
     a = 2 * window.get_height() // 27
     manager = pygame_gui.UIManager(window.get_size(), "data/ui_theme.json")
@@ -58,6 +60,8 @@ def MainMenu(window: pygame.surface.Surface):  # Игра:
                 elif event_in_MainGame.ui_element == creative_button:
                     CreativeGame(window)
                 elif event_in_MainGame.ui_element == exit_button:
+                    sound = pygame.mixer.Sound("data/mixkit-arrow-whoosh-1491 (mp3cut.net).wav")
+                    sound.play()
                     buttonStart(window)
             manager.process_events(event_in_MainGame)
 
